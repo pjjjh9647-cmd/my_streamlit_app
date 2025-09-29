@@ -9,8 +9,8 @@ import io
 import re
 import os
 
-# 첫번째 탭: 분석결과 (tab6)
-tab1, tab2, tab3, tab4, tab5, tab6 tab7= st.tabs([
+# 첫번째 탭: 분석결과 (tab7)
+tab1, tab2, tab3, tab4, tab5, tab6, tab7= st.tabs([
     "분석결과", 
     "과실품질 예측", 
     "분석결과(군위)", 
