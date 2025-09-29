@@ -93,112 +93,92 @@ with tab2:
     from typing import Optional
     import re
 
-# ▶ 한글 폰트 자동 설정 (개선판: 경로 안정화 + 시스템 폰트 우선)
-from pathlib import Path
-import os
-import matplotlib
-import matplotlib.pyplot as plt
-import matplotlib.font_manager as fm
-import streamlit as st
+    # ▶ 한글 폰트 자동 설정
+    import matplotlib
+    import matplotlib.font_manager as fm
+    import os
 
-plt.rcParams["font.size"] = 6
+    plt.rcParams["font.size"] = 6
 
-def _set_korean_font():
-    # 1) 앱 폴더 기준으로 fonts/를 정확히 찾도록 절대경로화
-    BASE = Path(__file__).parent
-    bundled_candidates = [
-        BASE / "fonts" / "NanumGothic.ttf",
-        BASE / "fonts" / "NotoSansKR-Regular.otf",
-    ]
-
-    # 2) 번들 폰트(저장소에 넣은 TTF/OTF)가 있으면 최우선 사용
-    for p in bundled_candidates:
-        if p.exists():
-            try:
-                fm.fontManager.addfont(str(p))
-                family = fm.FontProperties(fname=str(p)).get_name()
-                matplotlib.rcParams["font.family"] = family
+    def _set_korean_font():
+        bundled_candidates = [
+            "fonts/NanumGothic.ttf",
+            "fonts/NotoSansKR-Regular.otf",
+            "NanumGothic.ttf",
+            "NotoSansKR-Regular.otf",
+        ]
+        for p in bundled_candidates:
+            if os.path.exists(p):
+                try:
+                    fm.fontManager.addfont(p)
+                    family = fm.FontProperties(fname=p).get_name()
+                    matplotlib.rcParams["font.family"] = family
+                    matplotlib.rcParams["axes.unicode_minus"] = False
+                    return
+                except Exception:
+                    pass
+        preferred = ["Malgun Gothic", "AppleGothic", "NanumGothic",
+                    "Noto Sans CJK KR", "Noto Sans KR", "NanumBarunGothic"]
+        sys_fonts = set(f.name for f in fm.fontManager.ttflist)
+        for name in preferred:
+            if name in sys_fonts:
+                matplotlib.rcParams["font.family"] = name
                 matplotlib.rcParams["axes.unicode_minus"] = False
                 return
-            except Exception:
-                pass
+        matplotlib.rcParams["axes.unicode_minus"] = False
+        st.warning("한글 폰트를 찾지 못했습니다. fonts/ 폴더에 나눔고딕(NanumGothic.ttf) 등을 넣어주세요.")
 
-    # 3) 시스템에 깔려 있을 법한 한글 폰트 후보 (Streamlit Cloud는 보통 Noto 계열 있음)
-    preferred = [
-        "Noto Sans CJK KR", "Noto Sans KR",       # 리눅스/Cloud에서 기대되는 폰트
-        "NanumGothic", "Nanum Gothic",            # 나눔고딕(시스템 설치된 경우)
-        "Malgun Gothic",                          # 윈도우
-        "AppleGothic",                            # 맥
-    ]
+    _set_korean_font()
 
-    # 현재 시스템에 등록된 폰트 이름 집합
-    sys_fonts = {f.name for f in fm.fontManager.ttflist}
-    for name in preferred:
-        if name in sys_fonts:
-            matplotlib.rcParams["font.family"] = name
-            matplotlib.rcParams["axes.unicode_minus"] = False
-            return
+    # ---------------------------
+    # 공통 유틸: 문자열/품질표 정규화
+    # ---------------------------
+    def _clean_str(s: str) -> str:
+        s = str(s)
+        s = s.replace("\xa0", " ")                 # NBSP -> space
+        s = s.replace("\n", " ").replace("\r", " ")
+        s = re.sub(r"\s+", " ", s).strip()
+        s = re.sub(r"\s*\(\s*", " (", s)          # "( " -> " ("
+        s = re.sub(r"\s*\)\s*", ")", s)           # " )" -> ")"
+        return s
 
-    # 4) 그래도 못 찾았으면 최소한 마이너스 깨짐만 방지 + 안내
-    matplotlib.rcParams["axes.unicode_minus"] = False
-    st.warning("한글 폰트를 찾지 못했습니다. 필요하면 /fonts 에 TTF/OTF(예: NanumGothic.ttf)를 넣어주세요.")
+    def normalize_quality_columns(df: pd.DataFrame) -> pd.DataFrame:
+        """전년도 과실품질 테이블: 멀티헤더/공백/기호 정리 + 지역/수확일자 정규화"""
+        out = df.copy()
 
-_set_korean_font()
+        # 멀티헤더 → 단일 문자열
+        if isinstance(out.columns, pd.MultiIndex):
+            out.columns = [" ".join([str(x) for x in tup if str(x) != "nan"]).strip()
+                        for tup in out.columns.values]
 
-# ---------------------------
-# 공통 유틸: 문자열/품질표 정규화
-# ---------------------------
-def _clean_str(s: str) -> str:
-    s = str(s)
-    s = s.replace("\xa0", " ")                 # NBSP -> space
-    s = s.replace("\n", " ").replace("\r", " ")
-    s = re.sub(r"\s+", " ", s).strip()
-    s = re.sub(r"\s*\(\s*", " (", s)          # "( " -> " ("
-    s = re.sub(r"\s*\)\s*", ")", s)           # " )" -> ")"
-    return s
+        # 헤더 클린업
+        out.columns = [_clean_str(c) for c in out.columns]
 
+        # 흔한 별칭 통일
+        alias = {
+            "경도 평균(N/ø11mm)": "경도평균(N/ø11mm)",
+            "경도 평균 (N/ø11mm)": "경도평균(N/ø11mm)",
+            "착색 (Hunter L)": "착색(Hunter L)",
+            "착색 (Hunter a)": "착색(Hunter a)",
+            "착색 (Hunter b)": "착색(Hunter b)",
+        }
+        out = out.rename(columns={k: v for k, v in alias.items() if k in out.columns})
 
-def normalize_quality_columns(df: pd.DataFrame) -> pd.DataFrame:
-    """전년도 과실품질 테이블: 멀티헤더/공백/기호 정리 + 지역/수확일자 정규화"""
-    out = df.copy()
+        # 지역/수확일자 정리
+        if "지역" in out.columns:
+            out["지역"] = out["지역"].map(_clean_str)
+        if "수확일자" in out.columns:
+            out["수확일자"] = pd.to_datetime(out["수확일자"], errors="coerce")
 
-    # 멀티헤더 → 단일 문자열
-    if isinstance(out.columns, pd.MultiIndex):
-        out.columns = [
-            " ".join([str(x) for x in tup if str(x) != "nan"]).strip()
-            for tup in out.columns.values
-        ]
+        return out
 
-    # 헤더 클린업
-    out.columns = [_clean_str(c) for c in out.columns]
-
-    # 흔한 별칭 통일
-    alias = {
-        "경도 평균(N/ø11mm)": "경도평균(N/ø11mm)",
-        "경도 평균 (N/ø11mm)": "경도평균(N/ø11mm)",
-        "착색 (Hunter L)": "착색(Hunter L)",
-        "착색 (Hunter a)": "착색(Hunter a)",
-        "착색 (Hunter b)": "착색(Hunter b)",
-    }
-    out = out.rename(columns={k: v for k, v in alias.items() if k in out.columns})
-
-    # 지역/수확일자 정리
-    if "지역" in out.columns:
-        out["지역"] = out["지역"].map(_clean_str)
-    if "수확일자" in out.columns:
-        out["수확일자"] = pd.to_datetime(out["수확일자"], errors="coerce")
-
-    return out
-
-
-def get_first_col_by_pattern(df: pd.DataFrame, pattern: str) -> Optional[str]:
-    """정규식 패턴으로 컬럼명 1개 찾기(대소문자 무시)"""
-    pat = re.compile(pattern, flags=re.IGNORECASE)
-    for c in df.columns:
-        if pat.search(str(c)):
-            return c
-    return None
-
+    def get_first_col_by_pattern(df: pd.DataFrame, pattern: str) -> Optional[str]:
+        """정규식 패턴으로 컬럼명 1개 찾기(대소문자 무시)"""
+        pat = re.compile(pattern, flags=re.IGNORECASE)
+        for c in df.columns:
+            if pat.search(str(c)):
+                return c
+        return None
 
     # -------------------------------------------------
     # 기본 UI
@@ -837,6 +817,7 @@ def get_first_col_by_pattern(df: pd.DataFrame, pattern: str) -> Optional[str]:
             )
     else:
         st.info("좌측에서 지역과 품종을 고른 뒤 자동조회 & 예측 버튼을 눌러주세요. 올해 남은 월은 ‘예상 날씨(최근 3년 또는 전체 과거 평균)’로 채워 예측합니다.")
+
 # ==========================================================
 # 탭1: 분석결과(군위) - 이미지/표 뷰어 (홍로/후지)
 # ==========================================================
