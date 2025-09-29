@@ -145,55 +145,60 @@ def _set_korean_font():
 
 _set_korean_font()
 
-    # ---------------------------
-    # 공통 유틸: 문자열/품질표 정규화
-    # ---------------------------
-    def _clean_str(s: str) -> str:
-        s = str(s)
-        s = s.replace("\xa0", " ")                 # NBSP -> space
-        s = s.replace("\n", " ").replace("\r", " ")
-        s = re.sub(r"\s+", " ", s).strip()
-        s = re.sub(r"\s*\(\s*", " (", s)          # "( " -> " ("
-        s = re.sub(r"\s*\)\s*", ")", s)           # " )" -> ")"
-        return s
+# ---------------------------
+# 공통 유틸: 문자열/품질표 정규화
+# ---------------------------
+def _clean_str(s: str) -> str:
+    s = str(s)
+    s = s.replace("\xa0", " ")                 # NBSP -> space
+    s = s.replace("\n", " ").replace("\r", " ")
+    s = re.sub(r"\s+", " ", s).strip()
+    s = re.sub(r"\s*\(\s*", " (", s)          # "( " -> " ("
+    s = re.sub(r"\s*\)\s*", ")", s)           # " )" -> ")"
+    return s
 
-    def normalize_quality_columns(df: pd.DataFrame) -> pd.DataFrame:
-        """전년도 과실품질 테이블: 멀티헤더/공백/기호 정리 + 지역/수확일자 정규화"""
-        out = df.copy()
 
-        # 멀티헤더 → 단일 문자열
-        if isinstance(out.columns, pd.MultiIndex):
-            out.columns = [" ".join([str(x) for x in tup if str(x) != "nan"]).strip()
-                        for tup in out.columns.values]
+def normalize_quality_columns(df: pd.DataFrame) -> pd.DataFrame:
+    """전년도 과실품질 테이블: 멀티헤더/공백/기호 정리 + 지역/수확일자 정규화"""
+    out = df.copy()
 
-        # 헤더 클린업
-        out.columns = [_clean_str(c) for c in out.columns]
+    # 멀티헤더 → 단일 문자열
+    if isinstance(out.columns, pd.MultiIndex):
+        out.columns = [
+            " ".join([str(x) for x in tup if str(x) != "nan"]).strip()
+            for tup in out.columns.values
+        ]
 
-        # 흔한 별칭 통일
-        alias = {
-            "경도 평균(N/ø11mm)": "경도평균(N/ø11mm)",
-            "경도 평균 (N/ø11mm)": "경도평균(N/ø11mm)",
-            "착색 (Hunter L)": "착색(Hunter L)",
-            "착색 (Hunter a)": "착색(Hunter a)",
-            "착색 (Hunter b)": "착색(Hunter b)",
-        }
-        out = out.rename(columns={k: v for k, v in alias.items() if k in out.columns})
+    # 헤더 클린업
+    out.columns = [_clean_str(c) for c in out.columns]
 
-        # 지역/수확일자 정리
-        if "지역" in out.columns:
-            out["지역"] = out["지역"].map(_clean_str)
-        if "수확일자" in out.columns:
-            out["수확일자"] = pd.to_datetime(out["수확일자"], errors="coerce")
+    # 흔한 별칭 통일
+    alias = {
+        "경도 평균(N/ø11mm)": "경도평균(N/ø11mm)",
+        "경도 평균 (N/ø11mm)": "경도평균(N/ø11mm)",
+        "착색 (Hunter L)": "착색(Hunter L)",
+        "착색 (Hunter a)": "착색(Hunter a)",
+        "착색 (Hunter b)": "착색(Hunter b)",
+    }
+    out = out.rename(columns={k: v for k, v in alias.items() if k in out.columns})
 
-        return out
+    # 지역/수확일자 정리
+    if "지역" in out.columns:
+        out["지역"] = out["지역"].map(_clean_str)
+    if "수확일자" in out.columns:
+        out["수확일자"] = pd.to_datetime(out["수확일자"], errors="coerce")
 
-    def get_first_col_by_pattern(df: pd.DataFrame, pattern: str) -> Optional[str]:
-        """정규식 패턴으로 컬럼명 1개 찾기(대소문자 무시)"""
-        pat = re.compile(pattern, flags=re.IGNORECASE)
-        for c in df.columns:
-            if pat.search(str(c)):
-                return c
-        return None
+    return out
+
+
+def get_first_col_by_pattern(df: pd.DataFrame, pattern: str) -> Optional[str]:
+    """정규식 패턴으로 컬럼명 1개 찾기(대소문자 무시)"""
+    pat = re.compile(pattern, flags=re.IGNORECASE)
+    for c in df.columns:
+        if pat.search(str(c)):
+            return c
+    return None
+
 
     # -------------------------------------------------
     # 기본 UI
