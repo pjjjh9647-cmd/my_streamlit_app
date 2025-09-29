@@ -9,6 +9,15 @@ import io
 import re
 import os
 
+
+from pathlib import Path
+import matplotlib, matplotlib.pyplot as plt
+FONT = Path(__file__).parent / "fonts" / "NanumGothic.ttf"
+if FONT.exists():
+    matplotlib.font_manager.fontManager.addfont(str(FONT))
+    plt.rcParams["font.family"] = "NanumGothic"
+
+
 # 첫번째 탭: 분석결과 (tab7)
 tab1, tab2, tab3, tab4, tab5, tab6, tab7= st.tabs([
     "분석결과", 
