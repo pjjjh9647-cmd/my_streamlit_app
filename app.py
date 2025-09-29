@@ -22,7 +22,7 @@ tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
 
 with tab1:
     st.title("분석 결과")
-    BASE_DIR = Path(r"C:\Users\User\Desktop\mba\분석결과\관계시각화2")
+    BASE_DIR = Path(__file__).parent / "mba" / "분석결과" / "관계시각화2"
     CULTIVAR_DIRS = {
         "홍로": BASE_DIR / "홍로",
         "후지": BASE_DIR / "후지",
@@ -819,7 +819,7 @@ with tab2:
 # ==========================================================
 with tab3:
     st.title("분석결과(군위)")
-    BASE_DIR = Path(r"C:\Users\User\Desktop\mba\분석결과\군위")
+    BASE_DIR = Path(__file__).parent / "mba" / "분석결과" / "군위"
     CULTIVARS = ["홍로", "후지"]
 
     # 결과 자산(이미지/표) 자동 검색: 하위에 '홍로','후지' 폴더가 있거나, 파일명에 품종명이 들어있는 경우 모두 지원
@@ -1401,7 +1401,7 @@ with tab5:
     # ------------------------------
     # CSV 결과 표시
     # ------------------------------
-    csv_path = Path(r"C:\Users\User\Desktop\mba\defoliation\_out\result.csv")
+    csv_path = Path(__file__).parent / "mba" / "defoliation" / "_out" / "result.csv"
     if csv_path.exists():
         try:
             df = pd.read_csv(csv_path, encoding="utf-8-sig")
@@ -1417,7 +1417,7 @@ with tab5:
     # ------------------------------
     st.subheader("Before / After Overlay 이미지")
 
-    img_folder = Path(r"C:\Users\User\Desktop\mba\defoliation\_out\overlays")
+    img_folder = Path(__file__).parent / "mba" / "defoliation" / "_out" / "overlays"
     IMG_EXT = (".png", ".jpg", ".jpeg", ".bmp", ".gif", ".webp")
 
     all_imgs = sorted([p for p in img_folder.glob("*") if p.suffix.lower() in IMG_EXT])
@@ -1471,7 +1471,7 @@ with tab6:
     # ------------------------------
     # 결과 데이터 불러오기 (엑셀/CSV)
     # ------------------------------
-    csv_path = Path(r"C:\python\goldenball\apple_pairs_results.csv")
+    csv_path = Path(__file__).parent / "python" / "goldenball" / "apple_pairs_results.csv"
     if csv_path.exists():
         try:
             if csv_path.suffix.lower() == ".csv":
@@ -1490,7 +1490,7 @@ with tab6:
     # ------------------------------
     st.subheader("📷 분석된 과실 이미지 (Detection 결과)")
 
-    img_folder = Path(r"C:\python\goldenball\_debug_pairs")
+    img_folder = Path(__file__).parent / "python" / "goldenball" / "_debug_pairs"
     IMG_EXT = (".png", ".jpg", ".jpeg", ".bmp", ".gif", ".webp")
     all_imgs = sorted([p for p in img_folder.glob("*") if p.suffix.lower() in IMG_EXT])
 
