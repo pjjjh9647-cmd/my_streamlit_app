@@ -1,0 +1,9 @@
+과중: [RF Surrogate (Top3)] 과중 = 4.182353*tmin_min + 1.990877*BIO1 + -1.53413*BIO3 + 281.827865
+종경: [RF Surrogate (Top3)] 종경 = 1.012748*tmean_mean + 0.555473*BIO8 + -0.460091*BIO3 + 58.496371
+횡경: [RF Surrogate (Top3)] 횡경 = -1.067049*rad_mean + 0.19149*BIO3 + 0.010416*BIO4 + 88.350053
+L: [RF Surrogate (Top3)] L = 0.761287*tmax_max + 0.761287*BIO5 + -0.084436*BIO15 + 6.401431
+a: [RF Surrogate (Top3)] a = -0.987092*BIO6 + 0.390801*BIO8 + 0.109661*BIO15 + -12.053255
+b: [RF Surrogate (Top3)] b = 0.563414*rad_mean + 0.386501*tmax_max + 0.386501*BIO5 + -17.13521
+경도: [RF Surrogate (Top3)] 경도 = 1.427411*rad_mean + 0.046635*BIO17 + 0.010503*BIO19 + 34.0088
+당도: [RF Surrogate (Top3)] 당도 = 0.138938*BIO7 + 0.059249*BIO3 + 0.000237*BIO4 + 5.799479
+산도: [RF Surrogate (Top3)] 산도 = -0.010091*BIO5 + -0.00721*BIO1 + -0.001546*rad_mean + 0.769385

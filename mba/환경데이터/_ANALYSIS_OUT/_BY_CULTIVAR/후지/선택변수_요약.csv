@@ -1,0 +1,10 @@
+﻿target,selected_vars
+과중,"tmean_m10, tmax_m09, prcp_m06"
+종경,"tmean_m09, prcp_m08, BIO6"
+횡경,tmean_m09
+L,"tmean_m10, tmax_m10, tmax_m09"
+a,"tmean_m06, tmax_m10, BIO14"
+b,"tmean_m09, tmean_m07, tmax_m10"
+경도,"BIO8, BIO5, BIO15"
+당도,"BIO14, tmean_m06"
+산도,"tmax_m10, tmin_m10"

@@ -1,0 +1,82 @@
+# RF Surrogate (Top7 features)
+과중: (RF Surrogate 생성 실패: The feature names should match those that were passed during fit.
+Feature names seen at fit time, yet now missing:
+- BIO1
+- BIO10
+- BIO11
+- BIO12
+- BIO13
+- ...
+)
+종경: (RF Surrogate 생성 실패: The feature names should match those that were passed during fit.
+Feature names seen at fit time, yet now missing:
+- BIO10
+- BIO11
+- BIO12
+- BIO13
+- BIO14
+- ...
+)
+횡경: (RF Surrogate 생성 실패: The feature names should match those that were passed during fit.
+Feature names seen at fit time, yet now missing:
+- BIO1
+- BIO10
+- BIO11
+- BIO12
+- BIO13
+- ...
+)
+L: (RF Surrogate 생성 실패: The feature names should match those that were passed during fit.
+Feature names seen at fit time, yet now missing:
+- BIO10
+- BIO11
+- BIO12
+- BIO13
+- BIO14
+- ...
+)
+a: (RF Surrogate 생성 실패: The feature names should match those that were passed during fit.
+Feature names seen at fit time, yet now missing:
+- BIO1
+- BIO10
+- BIO11
+- BIO12
+- BIO13
+- ...
+)
+b: (RF Surrogate 생성 실패: The feature names should match those that were passed during fit.
+Feature names seen at fit time, yet now missing:
+- BIO1
+- BIO10
+- BIO11
+- BIO12
+- BIO13
+- ...
+)
+경도: (RF Surrogate 생성 실패: The feature names should match those that were passed during fit.
+Feature names seen at fit time, yet now missing:
+- BIO1
+- BIO10
+- BIO11
+- BIO12
+- BIO13
+- ...
+)
+당도: (RF Surrogate 생성 실패: The feature names should match those that were passed during fit.
+Feature names seen at fit time, yet now missing:
+- BIO1
+- BIO10
+- BIO12
+- BIO13
+- BIO14
+- ...
+)
+산도: (RF Surrogate 생성 실패: The feature names should match those that were passed during fit.
+Feature names seen at fit time, yet now missing:
+- BIO1
+- BIO10
+- BIO11
+- BIO12
+- BIO13
+- ...
+)

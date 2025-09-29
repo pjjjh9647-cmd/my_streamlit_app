@@ -1,0 +1,9 @@
+과중: [RF Surrogate (Top7)] 과중 = 27.986436*tmean_mean + -19.500409*BIO1 + -12.874489*BIO2 + -9.750718*rad_mean + 3.757523*BIO3 + -3.028252*BIO14 + 0.116994*tmin_min + 161.589562
+종경: [RF Surrogate (Top7)] 종경 = 2.412665*tmean_mean + -1.671756*BIO2 + 0.471648*BIO8 + -0.380966*BIO9 + -0.268923*BIO14 + 0.125479*BIO3 + -0.035734*BIO4 + 68.775581
+횡경: [RF Surrogate (Top7)] 횡경 = 1.176866*tmean_mean + -0.748493*rad_mean + 0.593462*BIO2 + -0.384283*BIO3 + -0.325304*BIO14 + -0.293261*tmin_min + -0.015595*BIO4 + 98.009556
+L: [RF Surrogate (Top7)] L = 1.028479*tmean_mean + 0.920429*rad_mean + 0.775709*tmin_min + 0.553947*BIO6 + 0.090418*BIO5 + 0.090418*tmax_max + -0.045502*BIO15 + 7.803875
+a: [RF Surrogate (Top7)] a = 4.590789*BIO2 + -1.63216*BIO3 + -0.872113*rad_mean + -0.766842*BIO7 + -0.522951*BIO6 + 0.13017*BIO8 + 0.09858*BIO15 + 37.248344
+b: [RF Surrogate (Top7)] b = 0.50634*tmax_max + 0.50634*BIO5 + 0.457942*rad_mean + -0.317073*BIO7 + -0.212172*BIO2 + -0.049509*BIO15 + 0.01981*BIO17 + -4.395964
+경도: [RF Surrogate (Top7)] 경도 = 2.616906*rad_mean + -0.544131*BIO3 + 0.145794*BIO14 + 0.112602*BIO15 + 0.04379*BIO17 + -0.002874*BIO19 + -0.000805*BIO18 + 22.750648
+당도: [RF Surrogate (Top7)] 당도 = 0.166642*BIO7 + 0.071367*BIO3 + -0.054104*BIO9 + -0.015806*BIO8 + 0.007976*BIO15 + 0.006492*BIO19 + 0.000995*BIO4 + 2.756779
+산도: [RF Surrogate (Top7)] 산도 = -0.010443*BIO1 + 0.004683*rad_mean + -0.003907*BIO5 + -0.003907*tmax_max + -0.000605*BIO14 + -0.000405*BIO17 + 5.5e-05*BIO18 + 0.622858
