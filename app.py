@@ -10,13 +10,14 @@ import re
 import os
 
 # 첫번째 탭: 분석결과 (tab6)
-tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
+tab1, tab2, tab3, tab4, tab5, tab6 tab7= st.tabs([
     "분석결과", 
     "과실품질 예측", 
     "분석결과(군위)", 
     "과실품질 예측(군위)", 
     "적엽 전후 처리 결과",
     "과실 이미지 분석 결과"  
+    "적합 품종 추천"
 ])
 
 
@@ -1517,3 +1518,102 @@ with tab6:
             sel = st.selectbox("이미지 선택", [p.name for p in all_imgs])
             path = img_folder / sel
             st.image(str(path), caption=str(path.name))
+
+# ==========================================================
+# 탭7: 지역 기반 적합 품종 추천
+# ==========================================================
+
+with tab7:
+    st.subheader("지역 기반 품종 안내 — 데모")
+    st.caption("실데이터 연동 전 UI 목업 화면이며, 예시 옵션만 제공합니다.")
+
+    # -----------------------------
+    # 1) 지역 선택: 도 / 시·군 / 구·읍·면
+    # -----------------------------
+    col_do, col_sigun, col_gueupmyeon = st.columns(3)
+
+    # 데모용 지역 계층 구조 (실데이터 연동 시 DB/API로 대체)
+    DEMO_REGIONS = {
+        "경상북도": {
+            "영주시": ["문정동", "이산면"],
+            "군위군": ["군위읍", "의흥면"]
+        },
+        "강원도": {
+            "평창군": ["평창읍", "대관령면"]
+        }
+    }
+
+    do_list = ["선택 없음"] + list(DEMO_REGIONS.keys())
+    sel_do = col_do.selectbox("도", do_list, index=0, key="tab7_do")
+
+    sigun_list = ["선택 없음"]
+    if sel_do != "선택 없음":
+        sigun_list += list(DEMO_REGIONS.get(sel_do, {}).keys())
+    sel_sigun = col_sigun.selectbox("시/군", sigun_list, index=0, key="tab7_sigun")
+
+    gueupmyeon_list = ["선택 없음"]
+    if sel_do != "선택 없음" and sel_sigun != "선택 없음":
+        gueupmyeon_list += DEMO_REGIONS.get(sel_do, {}).get(sel_sigun, [])
+    sel_gueupmyeon = col_gueupmyeon.selectbox("구/읍/면", gueupmyeon_list, index=0, key="tab7_gueupmyeon")
+
+    st.divider()
+
+    # -----------------------------
+    # 2) 지역에 따른 품종 선택 (데모 매핑)
+    # -----------------------------
+    # 실데이터 연동 시, 선택한 지역 키(sel_do, sel_sigun, sel_gueupmyeon)를 기반으로
+    # DB/API에서 품종 리스트를 가져오면 됩니다.
+    DEMO_CULTIVARS = {
+        ("경상북도", "영주시", "문정동"): ["후지", "홍로", "루비에스"],
+        ("경상북도", "군위군", "군위읍"): ["후지", "쓰가루"],
+        ("강원도", "평창군", "대관령면"): ["후지", "시나노골드"],
+    }
+
+    key_region = (sel_do, sel_sigun, sel_gueupmyeon)
+    cultivar_options = DEMO_CULTIVARS.get(key_region, [])
+
+    if sel_do == "선택 없음" or sel_sigun == "선택 없음" or sel_gueupmyeon == "선택 없음":
+        cultivar = st.selectbox("품종", ["지역을 먼저 선택하세요"], key="tab7_cultivar", disabled=True)
+    elif not cultivar_options:
+        cultivar = st.selectbox("품종", ["해당 지역의 예시 품종이 없습니다"], key="tab7_cultivar", disabled=True)
+    else:
+        cultivar = st.selectbox("품종", cultivar_options, key="tab7_cultivar")
+
+    st.divider()
+
+    # -----------------------------
+    # 3) 품종특징 / 주의사항 (데모 설명)
+    # -----------------------------
+    # 실데이터 연동 시, 선택 품종(cultivar)을 키로 DB/API에서 상세를 가져오면 됩니다.
+    DEMO_META = {
+        "후지": {
+            "특징": "만생종, 저장성 우수, 당산비 높음",
+            "주의": "착색 불량 시 적엽·반사판 등 광 환경 보완 필요"
+        },
+        "홍로": {
+            "특징": "조생종, 산미 낮고 당도 높음",
+            "주의": "비대기 수분·일사 관리, 수확기 낙과 주의"
+        },
+        "시나노골드": {
+            "특징": "황색 과피, 산미 조화, 경도 우수",
+            "주의": "햇볕 데임과 표면 얼룩 관리"
+        },
+        "쓰가루": {
+            "특징": "조생종, 과육 비교적 연함",
+            "주의": "수확기 일교차 확보 및 과실 균일도 관리"
+        },
+        "루비에스": {
+            "특징": "착색 양호, 향미 뚜렷",
+            "주의": "수세 균형 관리와 적절한 착과량 유지"
+        },
+    }
+
+    if cultivar_options and cultivar in DEMO_META:
+        st.markdown("#### 품종특징")
+        st.write(DEMO_META[cultivar]["특징"])
+        st.markdown("#### 주의사항")
+        st.write(DEMO_META[cultivar]["주의"])
+    else:
+        st.info("지역과 품종을 선택하면 품종특징과 주의사항이 표시됩니다. 실제 서비스에서는 DB/API 연동으로 자동 노출됩니다.")
+
+    st.caption("이 탭은 플랫폼 UI 시연용 데모입니다. 데이터는 예시이며 언제든 교체 가능합니다.")
