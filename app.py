@@ -10,19 +10,6 @@ import re
 import os
 
 
-from pathlib import Path
-import matplotlib.pyplot as plt
-from matplotlib import font_manager, rcParams
-
-FONT_PATH = Path(__file__).parent / "fonts" / "NanumGothic.ttf"
-if FONT_PATH.exists():
-    font_manager.fontManager.addfont(str(FONT_PATH))
-    rcParams["font.family"] = "NanumGothic"
-    # 한글 사용 시 마이너스 깨짐 방지(필요 시)
-    rcParams["axes.unicode_minus"] = False
-else:
-    st.warning("한글 폰트 파일을 찾지 못했습니다. /fonts/NanumGothic.ttf 를 넣어주세요.")
-
 
 
 # 첫번째 탭: 분석결과 (tab7)
@@ -106,42 +93,57 @@ with tab2:
     from typing import Optional
     import re
 
-    # ▶ 한글 폰트 자동 설정
-    import matplotlib
-    import matplotlib.font_manager as fm
-    import os
+# ▶ 한글 폰트 자동 설정 (개선판: 경로 안정화 + 시스템 폰트 우선)
+from pathlib import Path
+import os
+import matplotlib
+import matplotlib.pyplot as plt
+import matplotlib.font_manager as fm
+import streamlit as st
 
-    plt.rcParams["font.size"] = 6
+plt.rcParams["font.size"] = 6
 
-    def _set_korean_font():
-        bundled_candidates = [
-            "fonts/NanumGothic.ttf",
-            "fonts/NotoSansKR-Regular.otf",
-            "NanumGothic.ttf",
-            "NotoSansKR-Regular.otf",
-        ]
-        for p in bundled_candidates:
-            if os.path.exists(p):
-                try:
-                    fm.fontManager.addfont(p)
-                    family = fm.FontProperties(fname=p).get_name()
-                    matplotlib.rcParams["font.family"] = family
-                    matplotlib.rcParams["axes.unicode_minus"] = False
-                    return
-                except Exception:
-                    pass
-        preferred = ["Malgun Gothic", "AppleGothic", "NanumGothic",
-                    "Noto Sans CJK KR", "Noto Sans KR", "NanumBarunGothic"]
-        sys_fonts = set(f.name for f in fm.fontManager.ttflist)
-        for name in preferred:
-            if name in sys_fonts:
-                matplotlib.rcParams["font.family"] = name
+def _set_korean_font():
+    # 1) 앱 폴더 기준으로 fonts/를 정확히 찾도록 절대경로화
+    BASE = Path(__file__).parent
+    bundled_candidates = [
+        BASE / "fonts" / "NanumGothic.ttf",
+        BASE / "fonts" / "NotoSansKR-Regular.otf",
+    ]
+
+    # 2) 번들 폰트(저장소에 넣은 TTF/OTF)가 있으면 최우선 사용
+    for p in bundled_candidates:
+        if p.exists():
+            try:
+                fm.fontManager.addfont(str(p))
+                family = fm.FontProperties(fname=str(p)).get_name()
+                matplotlib.rcParams["font.family"] = family
                 matplotlib.rcParams["axes.unicode_minus"] = False
                 return
-        matplotlib.rcParams["axes.unicode_minus"] = False
-        st.warning("한글 폰트를 찾지 못했습니다. fonts/ 폴더에 나눔고딕(NanumGothic.ttf) 등을 넣어주세요.")
+            except Exception:
+                pass
 
-    _set_korean_font()
+    # 3) 시스템에 깔려 있을 법한 한글 폰트 후보 (Streamlit Cloud는 보통 Noto 계열 있음)
+    preferred = [
+        "Noto Sans CJK KR", "Noto Sans KR",       # 리눅스/Cloud에서 기대되는 폰트
+        "NanumGothic", "Nanum Gothic",            # 나눔고딕(시스템 설치된 경우)
+        "Malgun Gothic",                          # 윈도우
+        "AppleGothic",                            # 맥
+    ]
+
+    # 현재 시스템에 등록된 폰트 이름 집합
+    sys_fonts = {f.name for f in fm.fontManager.ttflist}
+    for name in preferred:
+        if name in sys_fonts:
+            matplotlib.rcParams["font.family"] = name
+            matplotlib.rcParams["axes.unicode_minus"] = False
+            return
+
+    # 4) 그래도 못 찾았으면 최소한 마이너스 깨짐만 방지 + 안내
+    matplotlib.rcParams["axes.unicode_minus"] = False
+    st.warning("한글 폰트를 찾지 못했습니다. 필요하면 /fonts 에 TTF/OTF(예: NanumGothic.ttf)를 넣어주세요.")
+
+_set_korean_font()
 
     # ---------------------------
     # 공통 유틸: 문자열/품질표 정규화
