@@ -1526,7 +1526,7 @@ with tab6:
 with tab7:
     st.subheader("적합 품종 추천")
 
-    # 지역 선택 (단순 선택창만, 데이터 없음)
+    # 1) 지역 선택
     col_do, col_sigun, col_gueupmyeon = st.columns(3)
     sel_do = col_do.selectbox("도", ["선택", "경상북도", "강원도"], key="demo_do")
     sel_sigun = col_sigun.selectbox("시/군", ["선택", "영주시", "군위군", "평창군"], key="demo_sigun")
@@ -1534,16 +1534,21 @@ with tab7:
 
     st.divider()
 
-    # 품종 (실데이터 없음, 그냥 예시 선택만)
-    cultivar = st.selectbox("품종", ["선택", "후지", "홍로", "시나노골드"], key="demo_cultivar")
+    # 2) 품종 — 실제 데이터는 없지만,
+    #    나중에 환경데이터 입력되면 자동으로 노출된다는 느낌만 주기
+    if sel_do != "선택" and sel_sigun != "선택" and sel_gueupmyeon != "선택":
+        cultivar = st.selectbox("품종", ["후지", "홍로", "시나노골드"], key="demo_cultivar")
+    else:
+        st.info("지역을 선택하면 알맞은 품종이 나타납니다.")
 
     st.divider()
 
-    # 품종특징 / 주의사항 (데이터 없음 → 안내 문구만)
-    st.markdown("#### 품종특징")
-    st.info("여기에 품종특징이 표시됩니다 (데이터 없음).")
+    # 3) 품종특징 & 주의사항 (데이터 없으므로 placeholder만 표시)
+    if sel_do != "선택" and sel_sigun != "선택" and sel_gueupmyeon != "선택":
+        st.markdown("#### 품종특징")
+        st.write("→ 선택한 품종의 특징이 여기에 표시됩니다 (데이터 없음).")
 
-    st.markdown("#### 주의사항")
-    st.info("여기에 주의사항이 표시됩니다 (데이터 없음).")
-
-    st.caption("※ 현재는 단순 UI 데모이며, 실제 데이터는 연동되지 않았습니다.")
+        st.markdown("#### 주의사항")
+        st.write("→ 선택한 품종의 주의사항이 여기에 표시됩니다 (데이터 없음).")
+    else:
+        st.caption("※ 실제 서비스에서는 지역을 선택하면 자동으로 품종, 특징, 주의사항이 표시됩니다.")
