@@ -1,5 +1,9 @@
-streamlit
+﻿streamlit
 pandas
 numpy
 matplotlib
+requests
 openpyxl
+lxml
+html5lib
+beautifulsoup4
