@@ -11,11 +11,18 @@ import os
 
 
 from pathlib import Path
-import matplotlib, matplotlib.pyplot as plt
-FONT = Path(__file__).parent / "fonts" / "NanumGothic.ttf"
-if FONT.exists():
-    matplotlib.font_manager.fontManager.addfont(str(FONT))
-    plt.rcParams["font.family"] = "NanumGothic"
+import matplotlib.pyplot as plt
+from matplotlib import font_manager, rcParams
+
+FONT_PATH = Path(__file__).parent / "fonts" / "NanumGothic.ttf"
+if FONT_PATH.exists():
+    font_manager.fontManager.addfont(str(FONT_PATH))
+    rcParams["font.family"] = "NanumGothic"
+    # 한글 사용 시 마이너스 깨짐 방지(필요 시)
+    rcParams["axes.unicode_minus"] = False
+else:
+    st.warning("한글 폰트 파일을 찾지 못했습니다. /fonts/NanumGothic.ttf 를 넣어주세요.")
+
 
 
 # 첫번째 탭: 분석결과 (tab7)
